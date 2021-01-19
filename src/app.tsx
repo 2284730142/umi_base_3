@@ -8,7 +8,7 @@ import MenuHeader from '@/components/MenuHeader';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 
-import useAuthModel from '@/models/useAuthModel';
+import { getToken } from '@/utils/request';
 
 import logoPng from '@/assets/images/logo/logo.png';
 
@@ -18,18 +18,38 @@ export interface InitialState {
   permission?: string[];
 }
 
+// 请求初始化
 export const request: RequestConfig = {
-  timeout: 5000,
+  timeout: 3000,
   errorConfig: {},
   middlewares: [], // 中间件
-  requestInterceptors: [], // ==request.interceptors.request.use()
-  responseInterceptors: [], // ==request.interceptors.response.use()
+  // @ts-ignore
+  retry: 3,
+  retryDelay: 1000,
+  requestInterceptors: [
+    (url, options) => {
+      return {
+        url: url,
+        options: {
+          ...options,
+          headers: { ...options.headers, token: getToken() },
+        },
+      };
+    },
+  ], // ==request.interceptors.request.use()
+  responseInterceptors: [
+    (response, options) => {
+      // console.log(response);
+      // console.log(options);
+      return response;
+    },
+  ], // ==request.interceptors.response.use()
 };
 
 // 数据流
 export const dva = {
   config: {
-    // onAction: createLogger(), // 开启console日志
+    onAction: createLogger(), // 开启console日志
     onError(e: Error) {
       message.error(e.message, 3);
     },
