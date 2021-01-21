@@ -2,6 +2,6 @@ import React from 'react';
 
 export default () => {
   return (
-    <div>Logo</div>
+    <div style={{ color: 'white' }}>Logo</div>
   );
 }
